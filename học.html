@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lộ trình ôn thi THPT Toán - Hóa - Sinh</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1 { text-align: center; color: #333; }
+        #countdown { text-align: center; font-size: 24px; margin: 20px; background: #fff; padding: 10px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: #fff; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        .topic-link { color: blue; text-decoration: none; }
+        .topic-link:hover { text-decoration: underline; }
+        .past { background-color: #ffebee; }
+        .today { background-color: #e8f5e8; }
+        .future { background-color: #f1f8e9; }
+    </style>
+</head>
+<body>
+    <h1>Lộ trình ôn thi THPT Toán - Hóa - Sinh</h1>
+    
+    <div id="countdown">
+        Thời gian còn lại đến buổi học tiếp theo (15/09/2025 19:00): <span id="timer"></span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ngày</th>
+                <th>19:00–19:30</th>
+                <th>19:30–20:30</th>
+                <th>20:30–21:30</th>
+                <th>21:30–22:00</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody id="schedule-body">
+            <!-- Schedule will be populated by JS -->
+        </tbody>
+    </table>
+
+    <script>
+        // Schedule data from Excel
+        const scheduleData = [
+            { date: '15/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 10 – Vectơ cơ bản', topic2: 'Toán 10 – Phương trình bậc 2', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '16/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 10 – Liên kết hóa học', topic2: 'Hóa 11 – Oxi – Lưu huỳnh', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '17/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Quang hợp', topic2: 'Sinh 11 – Hô hấp tế bào', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '18/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Hàm số & đồ thị', topic2: 'Toán 12 – Đạo hàm & cực trị', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '19/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Amin – Amino axit', topic2: 'Hóa 12 – Peptit – Protein', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '20/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Phiên mã – Dịch mã', topic2: 'Sinh 12 – Điều hòa hoạt động gen', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '21/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '22/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)', topic2: 'Toán 12 – Nguyên hàm, tích phân', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '23/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Polime – Vật liệu polime', topic2: 'Hóa 12 – Điện phân – Pin điện hóa', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '24/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Quy luật Mendel', topic2: 'Sinh 12 – Di truyền liên kết', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '25/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 10 – Phương trình bậc 2', topic2: 'Toán 11 – Hình học không gian (song song)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '26/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Oxi – Lưu huỳnh', topic2: 'Hóa 11 – Clo – Hidro halogenua', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '27/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 10 – Vận chuyển qua màng', topic2: 'Sinh 11 – Quang hợp', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '28/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '29/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Hình học không gian (vuông góc)', topic2: 'Toán 11 – Lượng giác cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '30/09/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Cacbon – Silic', topic2: 'Hóa 12 – Este & lipit', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '01/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Hô hấp tế bào', topic2: 'Sinh 11 – Tuần hoàn máu', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '02/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Nguyên hàm, tích phân', topic2: 'Toán 12 – Số phức cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '03/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Điện phân – Pin điện hóa', topic2: 'Hóa 12 – Crom – Sắt – Đồng', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '04/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Điều hòa hoạt động gen', topic2: 'Sinh 12 – Quy luật Mendel', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '05/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '06/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Hình học Oxyz', topic2: 'Toán 10 – Vectơ cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '07/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 10 – Nguyên tử & bảng tuần hoàn', topic2: 'Hóa 10 – Liên kết hóa học', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '08/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Di truyền liên kết', topic2: 'Sinh 12 – Tiến hóa', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '09/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Lượng giác cơ bản', topic2: 'Toán 12 – Hàm số & đồ thị', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '10/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Este & lipit', topic2: 'Hóa 12 – Amin – Amino axit', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '11/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Quang hợp', topic2: 'Sinh 11 – Hô hấp tế bào', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '12/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '13/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Đạo hàm & cực trị', topic2: 'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '14/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Peptit – Protein', topic2: 'Hóa 12 – Polime – Vật liệu polime', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '15/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Tuần hoàn máu', topic2: 'Sinh 11 – Hệ hô hấp', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '16/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 10 – Vectơ cơ bản', topic2: 'Toán 10 – Phương trình bậc 2', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '17/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 10 – Liên kết hóa học', topic2: 'Hóa 11 – Oxi – Lưu huỳnh', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '18/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Quy luật Mendel', topic2: 'Sinh 12 – Di truyền liên kết', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '19/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '20/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Hình học không gian (song song)', topic2: 'Toán 11 – Hình học không gian (vuông góc)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '21/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Clo – Hidro halogenua', topic2: 'Hóa 11 – Cacbon – Silic', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '22/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Tiến hóa', topic2: 'Sinh 12 – Sinh thái học', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '23/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)', topic2: 'Toán 12 – Nguyên hàm, tích phân', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '24/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Polime – Vật liệu polime', topic2: 'Hóa 12 – Điện phân – Pin điện hóa', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '25/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Hô hấp tế bào', topic2: 'Sinh 11 – Tuần hoàn máu', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '26/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '27/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Số phức cơ bản', topic2: 'Toán 12 – Hình học Oxyz', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '28/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Crom – Sắt – Đồng', topic2: 'Hóa 10 – Nguyên tử & bảng tuần hoàn', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '29/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Hệ hô hấp', topic2: 'Sinh 12 – ADN & cơ chế nhân đôi', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '30/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Hình học không gian (vuông góc)', topic2: 'Toán 11 – Lượng giác cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '31/10/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Cacbon – Silic', topic2: 'Hóa 12 – Este & lipit', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '01/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Di truyền liên kết', topic2: 'Sinh 12 – Tiến hóa', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '02/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '03/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Hàm số & đồ thị', topic2: 'Toán 12 – Đạo hàm & cực trị', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '04/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Amin – Amino axit', topic2: 'Hóa 12 – Peptit – Protein', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '05/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Sinh thái học', topic2: 'Sinh 10 – Cấu tạo tế bào', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '06/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Hình học Oxyz', topic2: 'Toán 10 – Vectơ cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '07/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 10 – Nguyên tử & bảng tuần hoàn', topic2: 'Hóa 10 – Liên kết hóa học', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '08/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Tuần hoàn máu', topic2: 'Sinh 11 – Hệ hô hấp', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '09/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '10/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 10 – Phương trình bậc 2', topic2: 'Toán 11 – Hình học không gian (song song)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '11/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Oxi – Lưu huỳnh', topic2: 'Hóa 11 – Clo – Hidro halogenua', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '12/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – ADN & cơ chế nhân đôi', topic2: 'Sinh 12 – Phiên mã – Dịch mã', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '13/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Đạo hàm & cực trị', topic2: 'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '14/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Peptit – Protein', topic2: 'Hóa 12 – Polime – Vật liệu polime', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '15/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Tiến hóa', topic2: 'Sinh 12 – Sinh thái học', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '16/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '17/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Nguyên hàm, tích phân', topic2: 'Toán 12 – Số phức cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '18/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Điện phân – Pin điện hóa', topic2: 'Hóa 12 – Crom – Sắt – Đồng', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '19/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 10 – Cấu tạo tế bào', topic2: 'Sinh 10 – Vận chuyển qua màng', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '20/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Hình học không gian (song song)', topic2: 'Toán 11 – Hình học không gian (vuông góc)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '21/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Clo – Hidro halogenua', topic2: 'Hóa 11 – Cacbon – Silic', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '22/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Hệ hô hấp', topic2: 'Sinh 12 – ADN & cơ chế nhân đôi', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '23/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '24/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Lượng giác cơ bản', topic2: 'Toán 12 – Hàm số & đồ thị', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '25/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Este & lipit', topic2: 'Hóa 12 – Amin – Amino axit', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '26/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Phiên mã – Dịch mã', topic2: 'Sinh 12 – Điều hòa hoạt động gen', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '27/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Số phức cơ bản', topic2: 'Toán 12 – Hình học Oxyz', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '28/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Crom – Sắt – Đồng', topic2: 'Hóa 10 – Nguyên tử & bảng tuần hoàn', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '29/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Sinh thái học', topic2: 'Sinh 10 – Cấu tạo tế bào', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '30/11/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '01/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 10 – Vectơ cơ bản', topic2: 'Toán 10 – Phương trình bậc 2', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '02/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 10 – Liên kết hóa học', topic2: 'Hóa 11 – Oxi – Lưu huỳnh', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '03/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 10 – Vận chuyển qua màng', topic2: 'Sinh 11 – Quang hợp', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '04/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Hàm số & đồ thị', topic2: 'Toán 12 – Đạo hàm & cực trị', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '05/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Amin – Amino axit', topic2: 'Hóa 12 – Peptit – Protein', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '06/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – ADN & cơ chế nhân đôi', topic2: 'Sinh 12 – Phiên mã – Dịch mã', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '07/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '08/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)', topic2: 'Toán 12 – Nguyên hàm, tích phân', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '09/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Polime – Vật liệu polime', topic2: 'Hóa 12 – Điện phân – Pin điện hóa', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '10/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Điều hòa hoạt động gen', topic2: 'Sinh 12 – Quy luật Mendel', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '11/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 10 – Phương trình bậc 2', topic2: 'Toán 11 – Hình học không gian (song song)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '12/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Oxi – Lưu huỳnh', topic2: 'Hóa 11 – Clo – Hidro halogenua', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '13/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 10 – Cấu tạo tế bào', topic2: 'Sinh 10 – Vận chuyển qua màng', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '14/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '15/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Hình học không gian (vuông góc)', topic2: 'Toán 11 – Lượng giác cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '16/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 11 – Cacbon – Silic', topic2: 'Hóa 12 – Este & lipit', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '17/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Quang hợp', topic2: 'Sinh 11 – Hô hấp tế bào', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '18/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Nguyên hàm, tích phân', topic2: 'Toán 12 – Số phức cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '19/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Điện phân – Pin điện hóa', topic2: 'Hóa 12 – Crom – Sắt – Đồng', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '20/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Phiên mã – Dịch mã', topic2: 'Sinh 12 – Điều hòa hoạt động gen', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '21/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '22/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Hình học Oxyz', topic2: 'Toán 10 – Vectơ cơ bản', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '23/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 10 – Nguyên tử & bảng tuần hoàn', topic2: 'Hóa 10 – Liên kết hóa học', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '24/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 12 – Quy luật Mendel', topic2: 'Sinh 12 – Di truyền liên kết', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '25/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 11 – Lượng giác cơ bản', topic2: 'Toán 12 – Hàm số & đồ thị', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '26/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Este & lipit', topic2: 'Hóa 12 – Amin – Amino axit', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '27/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 10 – Vận chuyển qua màng', topic2: 'Sinh 11 – Quang hợp', quiz: '10 câu trắc nghiệm Sinh' },
+            { date: '28/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Ôn hỗn hợp Toán – Hóa – Sinh', topic2: 'Làm đề thử (30–40 câu)', quiz: 'Mini test hỗn hợp 30 câu' },
+            { date: '29/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Toán 12 – Đạo hàm & cực trị', topic2: 'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)', quiz: '10 câu trắc nghiệm Toán' },
+            { date: '30/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Hóa 12 – Peptit – Protein', topic2: 'Hóa 12 – Polime – Vật liệu polime', quiz: '10 câu trắc nghiệm Hóa' },
+            { date: '31/12/2025', slot1: 'Ôn bài trên lớp', topic1: 'Sinh 11 – Hô hấp tế bào', topic2: 'Sinh 11 – Tuần hoàn máu', quiz: '10 câu trắc nghiệm Sinh' }
+        ];
+
+        // Updated topic to link map with new sources
+        const topicLinks = {
+            'Toán 10 – Vectơ cơ bản': 'https://vietjack.com/toan-lop-10/cac-dang-bai-tap-chuong-vecto.jsp',
+            'Toán 10 – Phương trình bậc 2': 'https://vietjack.com/toan-lop-10/giai-va-bien-luan-phuong-trinh-bac-hai.jsp',
+            'Toán 12 – Hàm số & đồ thị': 'https://vietjack.com/tai-lieu-mon-toan/60-cau-trac-nghiem-do-thi-ham-so-co-dap-an.jsp',
+            'Toán 12 – Đạo hàm & cực trị': 'https://vietjack.com/toan-lop-12/cuc-tri-cua-ham-so.jsp',
+            'Toán 12 – Ứng dụng đạo hàm (GTNN, GTLN)': 'https://vietjack.com/toan-lop-12/gia-tri-lon-nhat-gia-tri-nho-nhat-cua-ham-so.jsp',
+            'Toán 12 – Nguyên hàm, tích phân': 'https://vietjack.com/toan-lop-12/nguyen-ham-tich-phan-va-ung-dung.jsp',
+            'Toán 12 – Số phức cơ bản': 'https://vietjack.com/toan-lop-12/ly-thuyet-so-phuc.jsp',
+            'Toán 12 – Hình học Oxyz': 'https://vietjack.com/toan-lop-12/phuong-phap-toa-do-trong-khong-gian.jsp',
+            'Toán 11 – Hình học không gian (song song)': 'https://vietjack.com/toan-lop-11/hai-duong-thang-song-song-trong-khong-gian-va-cach-giai-dbmoi-2021.jsp',
+            'Toán 11 – Hình học không gian (vuông góc)': 'https://vietjack.com/toan-lop-11/duong-thang-vuong-goc-voi-mat-phang.jsp',
+            'Toán 11 – Lượng giác cơ bản': 'https://vietjack.com/toan-lop-11/ham-so-luong-giac-va-phuong-trinh-luong-giac.jsp',
+            'Hóa 10 – Liên kết hóa học': 'https://vietjack.com/hoa-hoc-lop-10/cac-dang-bai-tap-chuong-lien-ket-hoa-hoc.jsp',
+            'Hóa 11 – Oxi – Lưu huỳnh': 'https://vietjack.com/hoa-hoc-lop-11/nitrogen-sulfur-cddt.jsp',
+            'Hóa 12 – Amin – Amino axit': 'https://vietjack.com/bai-tap-trac-nghiem-hoa-12/chuong-3.jsp',
+            'Hóa 12 – Peptit – Protein': 'https://khoahoc.vietjack.com/thi-online/16-cau-trac-nghiem-peptit-va-protein-co-dap-an/28766',
+            'Hóa 12 – Polime – Vật liệu polime': 'https://vietjack.com/hoa-hoc-lop-12/polime-va-vat-lieu-polime.jsp',
+            'Hóa 12 – Điện phân – Pin điện hóa': 'https://vietjack.com/hoa-hoc-lop-12/chuyen-de-pin-dien-va-dien-phan-cddt.jsp',
+            'Hóa 11 – Clo – Hidro halogenua': 'https://khoahoc.vietjack.com/question/403171/bo-sung-hinh-ve-va-dap-an-hinh-ve-duoi-day-mo-ta-thi-nghiem-dieu-che',
+            'Hóa 11 – Cacbon – Silic': 'https://vietjack.com/hoa-hoc-lop-11/cacbon-silic.jsp',
+            'Hóa 12 – Este & lipit': 'https://vietjack.com/hoa-hoc-lop-12/este-lipit.jsp',
+            'Hóa 12 – Crom – Sắt – Đồng': 'https://khoahoc.vietjack.com/thi-online/500-bai-tap-crom-sat-dong-on-thi-dai-hoc-co-loi-giai/11282',
+            'Hóa 10 – Nguyên tử & bảng tuần hoàn': 'https://vietjack.com/hoa-hoc-lop-10/nguyen-tu.jsp',
+            'Sinh 11 – Quang hợp': 'https://vietjack.com/sinh-11-kn/trac-nghiem-bai-4-quang-hop-o-thuc-vat.jsp',
+            'Sinh 11 – Hô hấp tế bào': 'https://vietjack.com/sinh-11-kn/trac-nghiem-bai-6-ho-hap-o-thuc-vat.jsp',
+            'Sinh 12 – Phiên mã – Dịch mã': 'https://vietjack.com/tai-lieu-mon-sinh-hoc/bai-tap-phien-ma-va-dich-ma.jsp',
+            'Sinh 12 – Điều hòa hoạt động gen': 'https://loigiaihay.com/dieu-hoa-hoat-dong-gen-sinh-hoc-12-a96013.html',
+            'Sinh 12 – Quy luật Mendel': 'https://loigiaihay.com/300-bai-tap-quy-luat-menden-quy-luat-phan-li-e19623.html',
+            'Sinh 12 – Di truyền liên kết': 'https://vietjack.com/tai-lieu-mon-sinh-hoc/bai-tap-di-truyen-lien-ket-voi-gioi-tinh.jsp',
+            'Sinh 10 – Vận chuyển qua màng': 'https://vietjack.com/sinh-10-ct/trac-nghiem-bai-11-van-chuyen-cac-chat-qua-mang-sinh-chat.jsp',
+            'Sinh 12 – Tiến hóa': 'https://vietjack.com/chuyen-de-sinh-hoc-12/chuyen-de-bang-chung-va-co-che-tien-hoa.jsp',
+            'Sinh 11 – Tuần hoàn máu': 'https://vietjack.com/sinh-11-kn/trac-nghiem-bai-10-tuan-hoan-o-dong-vat.jsp',
+            'Sinh 11 – Hệ hô hấp': 'https://vietjack.com/sinh-11-kn/trac-nghiem-bai-9-ho-hap-o-dong-vat.jsp',
+            'Sinh 12 – Sinh thái học': 'https://khoahoc.vietjack.com/thi-online/150-bai-tap-he-sinh-thai-sinh-hoc-12-cuc-hay-co-loi-giai/14391',
+            'Sinh 10 – Cấu tạo tế bào': 'https://vietjack.com/chuyen-de-sinh-hoc-10/chuyen-de-cau-truc-cua-te-bao.jsp',
+            'Sinh 12 – ADN & cơ chế nhân đôi': 'https://loigiaihay.com/300-bai-tap-gen-ma-di-truyen-va-qua-trinh-nhan-doi-adn-e19606.html',
+            'Ôn hỗn hợp Toán – Hóa – Sinh': 'https://vietjack.com/tai-lieu-mon-toan/',
+            'Làm đề thử (30–40 câu)': 'https://vietjack.com/de-kiem-tra-lop-12/de-thi-toan-12-hoc-ki-2.jsp',
+            'Mini test hỗn hợp 30 câu': 'https://khoahoc.vietjack.com/trac-nghiem/Lop-12/mon-Hoa-hoc/chuong-1-este-lipit?type=test',
+            '10 câu trắc nghiệm Toán': 'https://vietjack.com/toan-lop-12/',
+            '10 câu trắc nghiệm Hóa': 'https://vietjack.com/bai-tap-trac-nghiem-hoa-12/',
+            '10 câu trắc nghiệm Sinh': 'https://vietjack.com/bai-tap-trac-nghiem-sinh-hoc-12/'
+        };
+
+        // Current date
+        const currentDate = new Date('2025-09-12');
+
+        // Function to create link element
+        function createLink(topic) {
+            const link = topicLinks[topic] || '#'; // Default to '#' if no link
+            return `<a href="${link}" target="_blank" class="topic-link">${topic}</a>`;
+        }
+
+        // Populate table
+        const tbody = document.getElementById('schedule-body');
+        scheduleData.forEach(day => {
+            const row = document.createElement('tr');
+            const dayDate = new Date(`2025-${day.date.split('/')[1]}-${day.date.split('/')[0]}`);
+            let className = '';
+            if (dayDate < currentDate) className = 'past';
+            else if (dayDate.toDateString() === currentDate.toDateString()) className = 'today';
+            else className = 'future';
+            row.className = className;
+
+            row.innerHTML = `
+                <td>${day.date}</td>
+                <td>${day.slot1}</td>
+                <td>${createLink(day.topic1)}</td>
+                <td>${createLink(day.topic2)}</td>
+                <td>${createLink(day.quiz)}</td>
+                <td></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Countdown to first session: 15/09/2025 19:00
+        const targetDate = new Date('2025-09-15T19:00:00');
+        function updateCountdown() {
+            const now = new Date();
+            const diff = targetDate - now;
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('timer').innerHTML = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`;
+            } else {
+                document.getElementById('timer').innerHTML = 'Buổi học đã bắt đầu!';
+            }
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
